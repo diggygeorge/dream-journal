@@ -6,6 +6,7 @@ import { type User } from '@supabase/supabase-js'
 // ...
 
 interface Dream {
+  id: number
   title: string
   description: string
 }
@@ -20,6 +21,9 @@ export default function AccountForm({ user }: { user: User | null }) {
   
   const [newDream, setNewDream] = useState({user: user?.id, title: "", description: ""})
   const [dreamList, setDreamList] = useState<Dream[]>([])
+  const [update, setUpdate] = useState(false)
+  const [selectedId, setSelectedId] = useState(0)
+  const [updatedDream, setUpdatedDream] = useState({title: "", description: ""})
 
   const getProfile = useCallback(async () => {
     try {
@@ -56,7 +60,7 @@ export default function AccountForm({ user }: { user: User | null }) {
 
       const { data, error, status } = await supabase
         .from('dreams')
-        .select(`title, description`)
+        .select(`id, title, description`)
         .eq('user', user?.id)
         .order('created_at', { ascending: false })
 
@@ -77,6 +81,7 @@ export default function AccountForm({ user }: { user: User | null }) {
       setLoading(false)
     }
     setNewDream({user: user?.id, title: "", description: ""})
+
   }
 
   useEffect(() => {
@@ -96,6 +101,46 @@ export default function AccountForm({ user }: { user: User | null }) {
     }
     else {
       getDreams()
+    }
+
+    setLoading(false)
+  }
+
+  const handleDelete = async (e:any, id: number) => {
+
+    e.preventDefault()
+
+    setLoading(true)
+
+    const { error } = await supabase.from("dreams").delete().eq('id', id);
+
+    if (error) {
+      console.error("Error deleting dream: ", error.message)
+    }
+    else {
+      getDreams()
+    }
+
+    setLoading(false)
+  }
+
+  const handleUpdate = async (e:any, id: number) => {
+
+    e.preventDefault()
+
+    setLoading(true)
+    console.log(updatedDream)
+    console.log(id)
+
+    const { error } = await supabase.from("dreams").update(updatedDream).eq('id', id);
+    console.log("dream successfully updated!")
+
+    if (error) {
+      console.error("Error updating dream: ", error.message)
+    }
+    else {
+      getDreams()
+      setUpdate(false)
     }
 
     setLoading(false)
@@ -143,7 +188,7 @@ export default function AccountForm({ user }: { user: User | null }) {
         <input id="email" type="text" value={user?.email} disabled />
       </div>
       <div>
-        <label htmlFor="username">Username</label>
+        <label htmlFor="username">Hello, </label>
         <input
           id="username"
           type="text"
@@ -189,12 +234,21 @@ export default function AccountForm({ user }: { user: User | null }) {
         ></input>
       </div>
       <button onClick={handleSubmit}>Submit</button>
+      {update ? 
+        <div>
+          <strong>New Title: </strong><input type="text" onChange={(e) => setUpdatedDream((prev) => ({...prev, title: e.target.value}))}></input>
+          <strong>New Description: </strong><input type="text" onChange={(e) => setUpdatedDream((prev) => ({...prev, description: e.target.value}))}></input>
+          <button onClick={(e:any) => handleUpdate(e, selectedId)}>Update</button>
+        </div> : <></>}
       <div>
         <ul>
           {dreamList?.map((dream) => (
-            <li className="border-2 border-white p-4 m-4 rounded-lg">
+            <li className="border-2 border-white p-4 m-4 rounded-lg" key={dream.id}>
               <strong>{dream.title}</strong>
               <h2>{dream.description}</h2>
+              <button onClick={() => {setUpdate(!update)
+                                      setSelectedId(dream.id)}}>Edit</button>
+              <button onClick={(e:any) => handleDelete(e, dream.id)}>Delete</button>
             </li>
           ))}
         </ul>
