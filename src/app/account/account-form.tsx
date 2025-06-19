@@ -87,9 +87,9 @@ export default function AccountForm({ user }: { user: User | null }) {
   useEffect(() => {
     getProfile()
     getDreams()
-  }, [user, getProfile])
+  }, [user, getProfile, getDreams])
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: React.MouseEvent) => {
     e.preventDefault()
 
     setLoading(true)
@@ -106,7 +106,7 @@ export default function AccountForm({ user }: { user: User | null }) {
     setLoading(false)
   }
 
-  const handleDelete = async (e:any, id: number) => {
+  const handleDelete = async (e:React.MouseEvent, id: number) => {
 
     e.preventDefault()
 
@@ -124,7 +124,7 @@ export default function AccountForm({ user }: { user: User | null }) {
     setLoading(false)
   }
 
-  const handleUpdate = async (e:any, id: number) => {
+  const handleUpdate = async (e:React.MouseEvent, id: number) => {
 
     e.preventDefault()
 
@@ -171,6 +171,7 @@ export default function AccountForm({ user }: { user: User | null }) {
       alert('Profile updated!')
     } catch (error) {
       alert('Error updating the data!')
+      console.log("Error:", error)
     } finally {
       setLoading(false)
     }
@@ -238,7 +239,7 @@ export default function AccountForm({ user }: { user: User | null }) {
         <div>
           <strong>New Title: </strong><input type="text" onChange={(e) => setUpdatedDream((prev) => ({...prev, title: e.target.value}))}></input>
           <strong>New Description: </strong><input type="text" onChange={(e) => setUpdatedDream((prev) => ({...prev, description: e.target.value}))}></input>
-          <button onClick={(e:any) => handleUpdate(e, selectedId)}>Update</button>
+          <button onClick={(e:React.MouseEvent) => handleUpdate(e, selectedId)}>Update</button>
         </div> : <></>}
       <div>
         <ul>
@@ -248,7 +249,7 @@ export default function AccountForm({ user }: { user: User | null }) {
               <h2>{dream.description}</h2>
               <button onClick={() => {setUpdate(!update)
                                       setSelectedId(dream.id)}}>Edit</button>
-              <button onClick={(e:any) => handleDelete(e, dream.id)}>Delete</button>
+              <button onClick={(e:React.MouseEvent) => handleDelete(e, dream.id)}>Delete</button>
             </li>
           ))}
         </ul>
