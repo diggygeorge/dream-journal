@@ -9,13 +9,8 @@ export default function SignupPage() {
   const [password, setPassword] = useState("")
   const [confirm_password, setConfirmPassword] = useState("")
 
-  const handleSignUp = () => {
-    if (password == confirm_password) {
-      signup
-    }
-    else {
-      alert("Passwords must match!")
-    }
+  const alertUnmatched = function () {
+    alert("Passwords must match!")
   }
 
   return (
@@ -31,7 +26,7 @@ export default function SignupPage() {
                                   e.preventDefault()
                                   setHidden(!isHidden)
                                   }}>Set Visibility</button>
-        <button className="border-2 border-white rounded-lg p-2 hover:bg-gray-800" formAction={handleSignUp}>Sign up</button>
+        <button className="border-2 border-white rounded-lg p-2 hover:bg-gray-800" formAction={password == confirm_password ? signup : alertUnmatched}>Sign up</button>
       </form>
       <div>
         <p>{(password !== confirm_password && confirm_password.length > 0) ? "Passwords must match!" : ""}</p>
