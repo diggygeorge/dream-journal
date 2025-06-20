@@ -87,7 +87,7 @@ export default function AccountForm({ user }: { user: User | null }) {
   useEffect(() => {
     getProfile()
     getDreams()
-  })
+  }, [])
 
   const handleSubmit = async (e: React.MouseEvent) => {
     e.preventDefault()
