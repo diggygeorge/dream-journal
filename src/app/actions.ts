@@ -43,24 +43,17 @@ export async function signup(formData: FormData) {
     password: formData.get('password') as string,
   }
 
-  const confirm_password = formData.get('confirm_password') as string
+  // same thing but for signup
+  const { error } = await supabase.auth.signUp(data)
 
-  if (data.password !== confirm_password) {
-    alert("Passwords must match!")
+  if (data.password.length < 3 || data.password.length > 16) {
+    console.log("Please enter a password that is between 3 and 16 characters.")
+  }
+  else if (error) {
+    redirect('/error')
   }
   else {
-    // same thing but for signup
-    const { error } = await supabase.auth.signUp(data)
-
-    if (data.password.length < 3 || data.password.length > 16) {
-      console.log("Please enter a password that is between 3 and 16 characters.")
-    }
-    else if (error) {
-      redirect('/error')
-    }
-    else {
-      revalidatePath('/', 'layout')
-      redirect('/confirmation') // redirect to confirmation page
-    }
+    revalidatePath('/', 'layout')
+    redirect('/confirmation') // redirect to confirmation page
   }
 }
