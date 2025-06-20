@@ -16,7 +16,6 @@ export async function login(formData: FormData) {
     email: formData.get('email') as string,
     password: formData.get('password') as string,
   }
-
   // signs in with password using the data, if error then redirected to error
   const { error } = await supabase.auth.signInWithPassword(data)
   if (error?.code == "invalid_credentials") {
@@ -31,7 +30,7 @@ export async function login(formData: FormData) {
     // changed data for '/', so redirected to account
     revalidatePath('/', 'layout')
     redirect('/account')
-  }
+  } 
 }
 
 export async function signup(formData: FormData) {
@@ -44,17 +43,24 @@ export async function signup(formData: FormData) {
     password: formData.get('password') as string,
   }
 
-  // same thing but for signup
-  const { error } = await supabase.auth.signUp(data)
+  const confirm_password = formData.get('confirm_password') as string
 
-  if (data.password.length < 3 || data.password.length > 16) {
-    console.log("Please enter a password that is between 3 and 16 characters.")
-  }
-  else if (error) {
-    redirect('/error')
+  if (data.password !== confirm_password) {
+    alert("Passwords must match!")
   }
   else {
-    revalidatePath('/', 'layout')
-    redirect('/confirmation') // redirect to confirmation page
+    // same thing but for signup
+    const { error } = await supabase.auth.signUp(data)
+
+    if (data.password.length < 3 || data.password.length > 16) {
+      console.log("Please enter a password that is between 3 and 16 characters.")
+    }
+    else if (error) {
+      redirect('/error')
+    }
+    else {
+      revalidatePath('/', 'layout')
+      redirect('/confirmation') // redirect to confirmation page
+    }
   }
 }
