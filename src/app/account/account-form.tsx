@@ -22,37 +22,8 @@ export default function AccountForm({ user }: { user: User | null }) {
   const [newDream, setNewDream] = useState({user: user?.id, title: "", description: ""})
   const [dreamList, setDreamList] = useState<Dream[]>([])
   const [update, setUpdate] = useState(false)
-  const [selectedId, setSelectedId] = useState(0)
+  const [selectedId, setSelectedId] = useState(37)
   const [updatedDream, setUpdatedDream] = useState({title: "", description: ""})
-
-  const getProfile = useCallback(async () => {
-    try {
-      setLoading(true)
-
-      const { data, error, status } = await supabase
-        .from('profiles')
-        .select(`full_name, username, website, avatar_url`)
-        .eq('id', user?.id)
-        .single()
-
-      if (error && status !== 406) {
-        console.log(error)
-        throw error
-      }
-
-      if (data) {
-        setFullname(data.full_name)
-        setUsername(data.username)
-        setWebsite(data.website)
-        setAvatarUrl(data.avatar_url)
-      }
-    } catch (error) {
-      alert('Error loading user data!')
-      console.log(error)
-    } finally {
-      setLoading(false)
-    }
-  }, [user, supabase])
 
   const getDreams = async () => {
     try {
@@ -84,10 +55,39 @@ export default function AccountForm({ user }: { user: User | null }) {
 
   }
 
+  const getProfile = useCallback(async () => {
+    try {
+      setLoading(true)
+
+      const { data, error, status } = await supabase
+        .from('profiles')
+        .select(`full_name, username, website, avatar_url`)
+        .eq('id', user?.id)
+        .single()
+
+      if (error && status !== 406) {
+        console.log(error)
+        throw error
+      }
+
+      if (data) {
+        setFullname(data.full_name)
+        setUsername(data.username)
+        setWebsite(data.website)
+        setAvatarUrl(data.avatar_url)
+        getDreams()
+      }
+    } catch (error) {
+      alert('Error loading user data!')
+      console.log(error)
+    } finally {
+      setLoading(false)
+    }
+  }, [user, supabase])
+
   useEffect(() => {
     getProfile()
-    getDreams()
-  }, [])
+  }, [user, getProfile])
 
   const handleSubmit = async (e: React.MouseEvent) => {
     e.preventDefault()
@@ -129,8 +129,6 @@ export default function AccountForm({ user }: { user: User | null }) {
     e.preventDefault()
 
     setLoading(true)
-    console.log(updatedDream)
-    console.log(id)
 
     const { error } = await supabase.from("dreams").update(updatedDream).eq('id', id);
     console.log("dream successfully updated!")
@@ -180,7 +178,7 @@ export default function AccountForm({ user }: { user: User | null }) {
   
 
   return (
-    <div className="form-widget">
+    <div className="form-widget static">
 
       {/* ... */}
 
@@ -227,28 +225,39 @@ export default function AccountForm({ user }: { user: User | null }) {
       </div>
       <div>
         <p>Description</p>
-        <input
-        type="text"
+        <textarea
         value={newDream.description}
         onChange={(e) => setNewDream((prev) => ({...prev, description: e.target.value}))}
         required
-        ></input>
+        ></textarea>
       </div>
       <button onClick={handleSubmit}>Submit</button>
       {update ? 
-        <div>
-          <strong>New Title: </strong><input type="text" onChange={(e) => setUpdatedDream((prev) => ({...prev, title: e.target.value}))}></input>
-          <strong>New Description: </strong><input type="text" onChange={(e) => setUpdatedDream((prev) => ({...prev, description: e.target.value}))}></input>
+        <div className="fixed bottom-0 right-0 border-4 border-white p-2 rounded-lg">
+          <div>
+              <div className="flex justify-between">
+                <p className="font-weight-bold">New Title: </p>
+                <button className="" onClick={() => setUpdate(false)}>X</button>
+              </div>
+              <input type="text" onChange={(e) => setUpdatedDream((prev) => ({...prev, title: e.target.value}))} required></input>
+          </div>
+          <div>
+            <p>New Description: </p>
+            <textarea onChange={(e) => setUpdatedDream((prev) => ({...prev, description: e.target.value}))} required></textarea>
+          </div>
           <button onClick={(e:React.MouseEvent) => handleUpdate(e, selectedId)}>Update</button>
         </div> : <></>}
       <div>
         <ul>
           {dreamList?.map((dream) => (
-            <li className="border-2 border-white p-4 m-4 rounded-lg" key={dream.id}>
+            <li className={`border-2 ${selectedId === dream.id && update ? "border-green-300" : "border-white"} p-4 m-4 rounded-lg`} key={dream.id}>
               <strong>{dream.title}</strong>
               <h2>{dream.description}</h2>
-              <button onClick={() => {setUpdate(!update)
-                                      setSelectedId(dream.id)}}>Edit</button>
+              <button onClick={() => {
+                                      if (!update)
+                                        setUpdate(!update)
+                                      setSelectedId(dream.id)
+                                      console.log(dream.id)}}>Edit</button>
               <button onClick={(e:React.MouseEvent) => handleDelete(e, dream.id)}>Delete</button>
             </li>
           ))}
