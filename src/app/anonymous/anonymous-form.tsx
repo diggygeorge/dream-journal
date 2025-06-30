@@ -1,6 +1,6 @@
 "use client";
 import { redirect } from 'next/navigation'
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import { type User } from '@supabase/supabase-js'
 
@@ -48,12 +48,12 @@ export default function AnonymousPage({ user }: { user: User | null }) {
 
   useEffect(() => {
     getAnonymousDreams()
-  }, [])
+  }, [user])
   
 
   return (
     <div className="form-widget static">
-      <div>
+      {loading ? <p>Loading</p> : <div>
         <ul>
           {dreamList?.map((dream) => (
             <li className={`border-2 border-white p-4 m-4 rounded-lg`} key={dream.id}>
@@ -62,7 +62,7 @@ export default function AnonymousPage({ user }: { user: User | null }) {
             </li>
           ))}
         </ul>
-      </div>
+      </div>}
       {user ?
       <>
         <div>
