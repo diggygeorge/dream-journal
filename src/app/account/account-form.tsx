@@ -1,4 +1,5 @@
 'use client'
+import { redirect } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import { type User } from '@supabase/supabase-js'
@@ -19,7 +20,7 @@ export default function AccountForm({ user }: { user: User | null }) {
   const [website, setWebsite] = useState<string | null>(null)
   const [avatar_url, setAvatarUrl] = useState<string | null>(null)
   
-  const [newDream, setNewDream] = useState({user: user?.id, title: "", description: ""})
+  const [newDream, setNewDream] = useState({user: user?.id, title: "", description: "", isPublic: false})
   const [dreamList, setDreamList] = useState<Dream[]>([])
   const [update, setUpdate] = useState(false)
   const [selectedId, setSelectedId] = useState(37)
@@ -51,7 +52,7 @@ export default function AccountForm({ user }: { user: User | null }) {
     } finally {
       setLoading(false)
     }
-    setNewDream({user: user?.id, title: "", description: ""})
+    setNewDream({user: user?.id, title: "", description: "", isPublic: false})
 
   }
 
@@ -93,6 +94,8 @@ export default function AccountForm({ user }: { user: User | null }) {
     e.preventDefault()
 
     setLoading(true)
+
+    console.log(newDream)
 
     const { error } = await supabase.from("dreams").insert(newDream).single();
 
@@ -215,6 +218,14 @@ export default function AccountForm({ user }: { user: User | null }) {
       </div>
 
       <div>
+        <form action={() => redirect('/anonymous')} method="post">
+          <button className="button block" type="submit">
+            View Anonymous Dreams
+          </button>
+        </form>
+      </div>
+
+      <div>
         <p>Title</p>
         <input
         type="text"
@@ -230,6 +241,10 @@ export default function AccountForm({ user }: { user: User | null }) {
         onChange={(e) => setNewDream((prev) => ({...prev, description: e.target.value}))}
         required
         ></textarea>
+      </div>
+      <div>
+        <button onClick={() => setNewDream((prev) => ({...prev, isPublic: !newDream.isPublic}))}>Set Visibility</button>
+        <p>{newDream.isPublic ? "Public" : "Private"}</p>
       </div>
       <button onClick={handleSubmit}>Submit</button>
       {update ? 

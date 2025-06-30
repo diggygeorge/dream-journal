@@ -24,6 +24,9 @@ export default function LoginPage() {
       <div>
         <button className="border-2 border-white rounded-lg p-2 hover:bg-gray-800" onClick={() => redirect('/signup')}>Create Account</button>
       </div>
+      <div>
+        <button className="border-2 border-white rounded-lg p-2 hover:bg-gray-800" onClick={() => redirect('/anonymous')}>View as Guest</button>
+      </div>
     </>
   )
 }

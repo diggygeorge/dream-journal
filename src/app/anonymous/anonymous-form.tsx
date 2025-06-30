@@ -1,0 +1,97 @@
+"use client";
+import { redirect } from 'next/navigation'
+import { useCallback, useEffect, useState } from 'react'
+import { createClient } from '@/utils/supabase/client'
+import { type User } from '@supabase/supabase-js'
+
+interface Dream {
+  id: number
+  title: string
+  description: string
+}
+
+export default function AnonymousPage({ user }: { user: User | null }) {
+
+  const supabase = createClient()
+  const [loading, setLoading] = useState(true)
+  
+  const [dreamList, setDreamList] = useState<Dream[]>([])
+
+  const getAnonymousDreams = async () => {
+    try {
+      setLoading(true)
+
+      const { data, error, status } = await supabase
+        .from('dreams')
+        .select(`id, title, description`)
+        .eq('isPublic', true)
+        .order('created_at', { ascending: false })
+
+      if (error && status !== 406) {
+        console.log(error)
+        throw error
+      }
+
+      if (data) {
+        console.log(data)
+        setDreamList(data)
+        console.log("Anonymous dreams loaded!")
+      }
+    } catch (error) {
+      alert('Error updating dream!')
+      console.log(error)
+    } finally {
+      setLoading(false)
+    }
+
+  }
+
+  useEffect(() => {
+    getAnonymousDreams()
+  }, [])
+  
+
+  return (
+    <div className="form-widget static">
+      <div>
+        <ul>
+          {dreamList?.map((dream) => (
+            <li className={`border-2 border-white p-4 m-4 rounded-lg`} key={dream.id}>
+              <strong>{dream.title}</strong>
+              <h2>{dream.description}</h2>
+            </li>
+          ))}
+        </ul>
+      </div>
+      {user ?
+      <>
+        <div>
+            <form action="/auth/signout" method="post">
+            <button className="button block" type="submit">
+                Sign out
+            </button>
+            </form>
+        </div>
+        <div>
+            <form action={() => redirect('/account')} method="post">
+                <button className="button block" type="submit">
+                    View/Create Dreams
+                </button>`
+            </form>
+        </div>
+      </>
+      : 
+      <>
+        <p>You are not able to post dreams.  Log in to create one.</p>
+        <div>
+            <form action={() => redirect('/')}>
+                <button className="button block" type="submit">
+                    Back to Login Page
+                </button>
+            </form>
+        </div>
+      </>
+      }
+    </div>
+  )
+}
