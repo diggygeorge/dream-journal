@@ -3,13 +3,29 @@ import { redirect } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import { type User } from '@supabase/supabase-js'
-
+import { Label } from "@/components/ui/label"
+import { Switch } from "@/components/ui/switch"
+import { Button } from "@/components/ui/button"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
 // ...
 
 interface Dream {
   id: number
   title: string
   description: string
+  author: string
 }
 
 export default function AccountForm({ user }: { user: User | null }) {
@@ -20,7 +36,7 @@ export default function AccountForm({ user }: { user: User | null }) {
   const [website, setWebsite] = useState<string | null>(null)
   const [avatar_url, setAvatarUrl] = useState<string | null>(null)
   
-  const [newDream, setNewDream] = useState({user: user?.id, title: "", description: "", isPublic: false})
+  const [newDream, setNewDream] = useState({user: user?.id, title: "", description: "", isPublic: false, author: username})
   const [dreamList, setDreamList] = useState<Dream[]>([])
   const [update, setUpdate] = useState(false)
   const [selectedId, setSelectedId] = useState(37)
@@ -32,7 +48,7 @@ export default function AccountForm({ user }: { user: User | null }) {
 
       const { data, error, status } = await supabase
         .from('dreams')
-        .select(`id, title, description`)
+        .select(`id, title, description, author`)
         .eq('user', user?.id)
         .order('created_at', { ascending: false })
 
@@ -52,7 +68,7 @@ export default function AccountForm({ user }: { user: User | null }) {
     } finally {
       setLoading(false)
     }
-    setNewDream({user: user?.id, title: "", description: "", isPublic: false})
+    setNewDream({user: user?.id, title: "", description: "", isPublic: false, author: username})
 
   }
 
@@ -76,6 +92,8 @@ export default function AccountForm({ user }: { user: User | null }) {
         setUsername(data.username)
         setWebsite(data.website)
         setAvatarUrl(data.avatar_url)
+        setNewDream((prev) => ({...prev, author: username}))
+        console.log("New Dream:", newDream)
         getDreams()
       }
     } catch (error) {
@@ -219,29 +237,49 @@ export default function AccountForm({ user }: { user: User | null }) {
           </button>
         </form>
       </div>
+      <AlertDialog>
+        <AlertDialogTrigger asChild>
+          <Button variant="outline">+</Button>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader className="w-full">
+            <div className="flex">
+              <Switch
+                checked={newDream.isPublic}
+                onCheckedChange={() => setNewDream((prev) => ({...prev, isPublic: !newDream.isPublic}))}
+                />
+              <Label className="pl-2" htmlFor="public_switch">{newDream.isPublic ? "Public" : "Private"}</Label>
+            </div>
+            <AlertDialogTitle>Add New Dream</AlertDialogTitle>
+            <AlertDialogDescription>
+              <div className="">
+                <div>
+                  <Label className="pt-2 pb-2">Title</Label>
+                  <Input
+                  type="text"
+                  value={newDream.title}
+                  onChange={(e) => setNewDream((prev) => ({...prev, title: e.target.value}))}
+                  required
+                  ></Input>
+                </div>
+                <div className="">
+                  <Label className="pb-2 pt-2">Description</Label>
+                  <Textarea
+                  value={newDream.description}
+                  onChange={(e) => setNewDream((prev) => ({...prev, description: e.target.value}))}
+                  required
+                  ></Textarea>
+                </div>
+              </div>              
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>            
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleSubmit}>Submit</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
-      <div>
-        <p>Title</p>
-        <input
-        type="text"
-        value={newDream.title}
-        onChange={(e) => setNewDream((prev) => ({...prev, title: e.target.value}))}
-        required
-        ></input>
-      </div>
-      <div>
-        <p>Description</p>
-        <textarea
-        value={newDream.description}
-        onChange={(e) => setNewDream((prev) => ({...prev, description: e.target.value}))}
-        required
-        ></textarea>
-      </div>
-      <div>
-        <button onClick={() => setNewDream((prev) => ({...prev, isPublic: !newDream.isPublic}))}>Set Visibility</button>
-        <p>{newDream.isPublic ? "Public" : "Private"}</p>
-      </div>
-      <button onClick={handleSubmit}>Submit</button>
       {update ? 
         <div className="fixed bottom-0 right-0 border-4 border-white p-2 rounded-lg">
           <div>
@@ -260,7 +298,7 @@ export default function AccountForm({ user }: { user: User | null }) {
       <div>
         <ul>
           {dreamList?.map((dream) => (
-            <li className={`border-2 ${selectedId === dream.id && update ? "border-green-300" : "border-white"} p-4 m-4 rounded-lg`} key={dream.id}>
+            <li className={`border-2 ${selectedId === dream.id && update ? "border-green-300" : "border-black"} p-4 m-4 rounded-lg`} key={dream.id}>
               <strong>{dream.title}</strong>
               <h2>{dream.description}</h2>
               <button onClick={() => {

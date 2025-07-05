@@ -8,6 +8,7 @@ interface Dream {
   id: number
   title: string
   description: string
+  author: string
 }
 
 export default function AnonymousPage({ user }: { user: User | null }) {
@@ -23,7 +24,7 @@ export default function AnonymousPage({ user }: { user: User | null }) {
 
       const { data, error, status } = await supabase
         .from('dreams')
-        .select(`id, title, description`)
+        .select(`id, title, description, author`)
         .eq('isPublic', true)
         .order('created_at', { ascending: false })
 
@@ -56,9 +57,10 @@ export default function AnonymousPage({ user }: { user: User | null }) {
       {loading ? <p>Loading</p> : <div>
         <ul>
           {dreamList?.map((dream) => (
-            <li className={`border-2 border-white p-4 m-4 rounded-lg`} key={dream.id}>
+            <li className={`border-2 border-black p-4 m-4 rounded-lg`} key={dream.id}>
               <strong>{dream.title}</strong>
               <h2>{dream.description}</h2>
+              <h2>By {dream.author}</h2>
             </li>
           ))}
         </ul>
