@@ -184,11 +184,6 @@ export default function AccountForm({ user }: { user: User | null }) {
     <div className="form-widget static">
 
       {/* ... */}
-
-      <div>
-        <label htmlFor="email">Email</label>
-        <input id="email" type="text" value={user?.email} disabled />
-      </div>
       <div>
         <label htmlFor="username">Hello, </label>
         <input
