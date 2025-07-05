@@ -2,7 +2,6 @@
 
 import { signup } from '../actions'
 import { useState } from 'react'
-import { redirect } from 'next/navigation'
 import { Button } from "@/components/ui/button"
 import { Eye, EyeOff } from 'lucide-react';
 import {
