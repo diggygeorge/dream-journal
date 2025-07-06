@@ -19,6 +19,8 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import { Loader } from 'lucide-react';
+
 // ...
 
 interface Dream {
@@ -213,28 +215,28 @@ export default function AccountForm({ user }: { user: User | null }) {
       </div>
 
       <div>
-        <button
+        <Button
           className="button primary block"
           onClick={() => updateProfile({ fullname, username, website, avatar_url })}
           disabled={loading}
         >
-          {loading ? 'Loading ...' : 'Update'}
-        </button>
+          Update
+        </Button>
       </div>
 
       <div>
         <form action="/auth/signout" method="post">
-          <button className="button block" type="submit">
+          <Button className="button block" type="submit">
             Sign out
-          </button>
+          </Button>
         </form>
       </div>
 
       <div>
         <form action={() => redirect('/anonymous')} method="post">
-          <button className="button block" type="submit">
+          <Button className="button block" type="submit">
             View Anonymous Dreams
-          </button>
+          </Button>
         </form>
       </div>
       <AlertDialog>
@@ -279,38 +281,49 @@ export default function AccountForm({ user }: { user: User | null }) {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-
-      {update ? 
-        <div className="fixed bottom-0 right-0 border-4 border-white p-2 rounded-lg">
-          <div>
-              <div className="flex justify-between">
-                <p className="font-weight-bold">New Title: </p>
-                <button className="" onClick={() => setUpdate(false)}>X</button>
-              </div>
-              <input type="text" onChange={(e) => setUpdatedDream((prev) => ({...prev, title: e.target.value}))} required></input>
-          </div>
-          <div>
-            <p>New Description: </p>
-            <textarea onChange={(e) => setUpdatedDream((prev) => ({...prev, description: e.target.value}))} required></textarea>
-          </div>
-          <button onClick={(e:React.MouseEvent) => handleUpdate(e, selectedId)}>Update</button>
-        </div> : <></>}
-      <div>
+      {loading ? <Loader/> : <div>
         <ul>
           {dreamList?.map((dream) => (
             <li className={`border-2 ${selectedId === dream.id && update ? "border-green-300" : "border-black"} p-4 m-4 rounded-lg`} key={dream.id}>
               <strong>{dream.title}</strong>
               <h2>{dream.description}</h2>
-              <button onClick={() => {
-                                      if (!update)
-                                        setUpdate(!update)
-                                      setSelectedId(dream.id)
-                                      console.log(dream.id)}}>Edit</button>
+              <AlertDialog>
+                <AlertDialogTrigger onClick={() => setSelectedId(dream.id)}>Edit</AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Edit Dream</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Choose a new title and description.
+                      <div className="">
+                        <div>
+                          <Label className="pt-2 pb-2">New Title</Label>
+                          <Input
+                           type="text"
+                           onChange={(e) => setUpdatedDream((prev) => ({...prev, title: e.target.value}))}
+                           required
+                          ></Input>
+                        </div>
+                        <div className="">
+                          <Label className="pb-2 pt-2">New Description</Label>
+                          <Textarea
+                          onChange={(e) => setUpdatedDream((prev) => ({...prev, description: e.target.value}))}
+                          required
+                          ></Textarea>
+                        </div>
+                      </div>
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={(e:React.MouseEvent) => handleUpdate(e, selectedId)}>Update</AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
               <button onClick={(e:React.MouseEvent) => handleDelete(e, dream.id)}>Delete</button>
             </li>
           ))}
         </ul>
-      </div>
+      </div>}
     </div>
   )
 }
