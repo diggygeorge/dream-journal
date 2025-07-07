@@ -48,7 +48,7 @@ export default function CreateUsernamePage({ user }: { user: User | null }) {
       <CardHeader>
         <CardTitle>Create username</CardTitle>
         <CardDescription>
-          Username has to be between 3 and 16 characters.
+          Username has to be between 3 and 16 characters.  Note that you cannot change your name afterwards.
         </CardDescription>
       </CardHeader>
       <CardContent>

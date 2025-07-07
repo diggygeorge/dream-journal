@@ -171,124 +171,90 @@ export default function AccountForm({ user }: { user: User | null }) {
 
     setLoading(false)
   }
-
-  async function updateProfile({
-    username,
-    website,
-    avatar_url,
-  }: {
-    username: string | null
-    fullname: string | null
-    website: string | null
-    avatar_url: string | null
-  }) {
-    try {
-      setLoading(true)
-
-      const { error } = await supabase.from('profiles').upsert({
-        id: user?.id as string,
-        full_name: fullname,
-        username,
-        website,
-        avatar_url,
-        updated_at: new Date().toISOString(),
-      })
-      if (error) throw error
-      alert('Profile updated!')
-    } catch (error) {
-      alert('Error updating the data!')
-      console.log("Error:", error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
   
 
   return (
-    <div className="form-widget static">
+    <div className="form-widget static min-h-screen bg-gradient-to-b from-[#03002e] to-[#010048]">
 
-      {/* ... */}
-      <div>
-        <label htmlFor="username">Hello, </label>
-        {username}
-      </div>
-
-      <div>
-        <Button
-          className="button primary block"
-          onClick={() => updateProfile({ fullname, username, website, avatar_url })}
-          disabled={loading}
-        >
-          Update
-        </Button>
-      </div>
-
-      <div>
-        <form action="/auth/signout" method="post">
-          <Button className="button block" type="submit">
-            Sign out
-          </Button>
-        </form>
-      </div>
-
-      <div>
-        <form action={() => redirect('/anonymous')} method="post">
-          <Button className="button block" type="submit">
-            View Anonymous Dreams
-          </Button>
-        </form>
-      </div>
-      <AlertDialog>
-        <AlertDialogTrigger asChild>
-          <Button variant="outline">+</Button>
-        </AlertDialogTrigger>
-        <AlertDialogContent>
-          <AlertDialogHeader className="w-full">
-            <div className="flex">
-              <Switch
-                checked={newDream.isPublic}
-                onCheckedChange={() => setNewDream((prev) => ({...prev, isPublic: !newDream.isPublic}))}
-                />
-              <Label className="pl-2" htmlFor="public_switch">{newDream.isPublic ? "Public" : "Private"}</Label>
+      <div className="sticky p-4 top-0 bg-[#03002e]">
+        <div className="flex justify-between">
+          <div className="text-[#e3d095] scroll-m-20 pb-2 text-3xl font-semibold tracking-tight first:mt-0">
+            <label htmlFor="username">Hello, </label>
+            {username}
+          </div>
+          <div className="flex">
+            <div>
+              <form action={() => redirect('/anonymous')} method="post">
+                <Button className=" text-white border-2 border-black button block bg-[#0e2148] hover:bg-gray-800 cursor-pointer" type="submit">
+                  View Anonymous Dreams
+                </Button>
+              </form>
             </div>
-            <AlertDialogTitle>Add New Dream</AlertDialogTitle>
-            <AlertDialogDescription>
-              <div className="">
-                <div>
-                  <Label className="pt-2 pb-2">Title</Label>
-                  <Input
-                  type="text"
-                  value={newDream.title}
-                  onChange={(e) => setNewDream((prev) => ({...prev, title: e.target.value}))}
-                  required
-                  ></Input>
-                </div>
+
+            <div>
+              <form action="/auth/signout" method="post">
+                <Button className="text-[#e3d095] bg-[#0e2148] border-2 border-black button block hover:bg-gray-800 cursor-pointer" type="submit">
+                  Sign out
+                </Button>
+              </form>
+            </div>
+          </div>
+        </div>
+        
+        <AlertDialog>
+          <AlertDialogTrigger asChild className="fixed bottom-10 right-10">
+            <Button className="hover:bg-gray-800 cursor-pointer text-xl">+</Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader className="w-full">
+              <div className="flex">
+                <Switch
+                  checked={newDream.isPublic}
+                  onCheckedChange={() => setNewDream((prev) => ({...prev, isPublic: !newDream.isPublic}))}
+                  />
+                <Label className="pl-2" htmlFor="public_switch">{newDream.isPublic ? "Public" : "Private"}</Label>
+              </div>
+              <AlertDialogTitle>Add New Dream</AlertDialogTitle>
+              <AlertDialogDescription>
                 <div className="">
-                  <Label className="pb-2 pt-2">Description</Label>
-                  <Textarea
-                  value={newDream.description}
-                  onChange={(e) => setNewDream((prev) => ({...prev, description: e.target.value}))}
-                  required
-                  ></Textarea>
-                </div>
-              </div>              
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>            
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleSubmit}>Submit</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-      {loading ? <div className="static"><Loader className="absolute top-1/2 left-1/2"/></div> : <div>
-        <ul>
+                  <div>
+                    <Label className="pt-2 pb-2">Title</Label>
+                    <Input
+                    type="text"
+                    value={newDream.title}
+                    onChange={(e) => setNewDream((prev) => ({...prev, title: e.target.value}))}
+                    required
+                    ></Input>
+                  </div>
+                  <div className="">
+                    <Label className="pb-2 pt-2">Description</Label>
+                    <Textarea
+                    value={newDream.description}
+                    onChange={(e) => setNewDream((prev) => ({...prev, description: e.target.value}))}
+                    required
+                    ></Textarea>
+                  </div>
+                </div>              
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>            
+              <AlertDialogCancel className="cursor-pointer">Cancel</AlertDialogCancel>
+              <AlertDialogAction className="cursor-pointer" onClick={handleSubmit}>Submit</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </div>
+      
+      {loading ? <div className="static"><Loader color="#ffffff" className="absolute top-1/2 left-1/2"/></div> : <div className="p-4">
+        <ul className="flex-grow grid md:grid-cols-2 bg-[#001e6a] rounded-lg border-1 border-transparent">
           {dreamList?.map((dream) => (
-            <li className={`border-2 ${selectedId === dream.id && update ? "border-green-300" : "border-black"} p-4 m-4 rounded-lg`} key={dream.id}>
+            <li className={`shadow-md bg-white text-black hover:shadow-lg transition-all duration-200 border-4 ${selectedId === dream.id && update ? "ring-2 ring-purple-500" : ""} p-4 m-1 rounded-lg bg-white`} key={dream.id}>
               <strong>{dream.title}</strong>
               <h2>{dream.description}</h2>
               <AlertDialog>
-                <AlertDialogTrigger onClick={() => setSelectedId(dream.id)}>Edit</AlertDialogTrigger>
+                <Button size="sm" className="hover:bg-gray-200 cursor-pointer" variant="outline">
+                  <AlertDialogTrigger className="cursor-pointer" onClick={() => setSelectedId(dream.id)}>Edit</AlertDialogTrigger>
+                </Button>
                 <AlertDialogContent>
                   <AlertDialogHeader>
                     <AlertDialogTitle>Edit Dream</AlertDialogTitle>
@@ -314,12 +280,12 @@ export default function AccountForm({ user }: { user: User | null }) {
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={(e:React.MouseEvent) => handleUpdate(e, selectedId)}>Update</AlertDialogAction>
+                    <AlertDialogCancel className="cursor-pointer">Cancel</AlertDialogCancel>
+                    <AlertDialogAction className="cursor-pointer" onClick={(e:React.MouseEvent) => handleUpdate(e, selectedId)}>Update</AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
-              <button onClick={(e:React.MouseEvent) => handleDelete(e, dream.id)}>Delete</button>
+              <Button size="sm" className="ml-2 hover:bg-gray-800 cursor-pointer" onClick={(e:React.MouseEvent) => handleDelete(e, dream.id)}>Delete</Button>
             </li>
           ))}
         </ul>

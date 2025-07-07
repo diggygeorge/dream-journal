@@ -60,10 +60,8 @@ export async function signup(formData: FormData) {
   export async function reset(formData: FormData) {
     const supabase = await createClient()
 
-    // type-casting here for convenience
     let email = formData.get('email') as string
 
-    // same thing but for signup
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
                         redirectTo: 'http://localhost:3001/change_password',
                       })
@@ -77,7 +75,6 @@ export async function signup(formData: FormData) {
   export async function update_password(formData: FormData) {
     const supabase = await createClient()
 
-    // type-casting here for convenience
     let newPassword = formData.get('password') as string
 
     const {data: session } = await supabase.auth.getSession();

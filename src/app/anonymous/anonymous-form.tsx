@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import { type User } from '@supabase/supabase-js'
+import { Button } from '@/components/ui/button'
 
 interface Dream {
   id: number
@@ -69,16 +70,16 @@ export default function AnonymousPage({ user }: { user: User | null }) {
       <>
         <div>
             <form action="/auth/signout" method="post">
-            <button className="button block" type="submit">
+            <Button className="button block" type="submit">
                 Sign out
-            </button>
+            </Button>
             </form>
         </div>
         <div>
             <form action={() => redirect('/account')} method="post">
-                <button className="button block" type="submit">
+                <Button className="button block" type="submit">
                     View/Create Dreams
-                </button>`
+                </Button>
             </form>
         </div>
       </>
