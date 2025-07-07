@@ -110,26 +110,29 @@ export default function AccountForm({ user }: { user: User | null }) {
   }, [user, getProfile])
 
   useEffect(() => {
-    console.log("New Dream updated:", newDream)
+    console.log("New Dream", newDream)
   }, [newDream])
 
   const handleSubmit = async (e: React.MouseEvent) => {
-    e.preventDefault()
+    try {
+      e.preventDefault()
 
-    setLoading(true)
+      setLoading(true)
 
-    console.log(newDream)
+      console.log(newDream)
 
-    const { error } = await supabase.from("dreams").insert(newDream).single();
+      const { error } = await supabase.from("dreams").insert(newDream).single();
 
-    if (error) {
-      console.error("Error inserting dream: ", error.message)
+      if (error) {
+        console.error("Error inserting dream: ", error.message)
+      }
+      else {
+        await getDreams()
+      }
     }
-    else {
-      getDreams()
+    finally {
+      setLoading(false)
     }
-
-    setLoading(false)
   }
 
   const handleDelete = async (e:React.MouseEvent, id: number) => {
@@ -144,7 +147,7 @@ export default function AccountForm({ user }: { user: User | null }) {
       console.error("Error deleting dream: ", error.message)
     }
     else {
-      getDreams()
+      await getDreams()
     }
 
     setLoading(false)
@@ -163,8 +166,7 @@ export default function AccountForm({ user }: { user: User | null }) {
       console.error("Error updating dream: ", error.message)
     }
     else {
-      getDreams()
-      setUpdate(false)
+      await getDreams()
     }
 
     setLoading(false)
@@ -279,7 +281,7 @@ export default function AccountForm({ user }: { user: User | null }) {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-      {loading ? <Loader/> : <div>
+      {loading ? <div className="static"><Loader className="absolute top-1/2 left-1/2"/></div> : <div>
         <ul>
           {dreamList?.map((dream) => (
             <li className={`border-2 ${selectedId === dream.id && update ? "border-green-300" : "border-black"} p-4 m-4 rounded-lg`} key={dream.id}>
