@@ -70,7 +70,7 @@ export default function AccountForm({ user }: { user: User | null }) {
     } finally {
       setLoading(false)
     }
-    setNewDream({user: user?.id, title: "", description: "", isPublic: false, author: username})
+    setNewDream((prev) => ({...prev, title: "", description: "", isPublic: false}))
 
   }
 
@@ -94,8 +94,7 @@ export default function AccountForm({ user }: { user: User | null }) {
         setUsername(data.username)
         setWebsite(data.website)
         setAvatarUrl(data.avatar_url)
-        setNewDream((prev) => ({...prev, author: username}))
-        console.log("New Dream:", newDream)
+        setNewDream((prev) => ({...prev, author: data.username}))
         getDreams()
       }
     } catch (error) {
@@ -109,6 +108,10 @@ export default function AccountForm({ user }: { user: User | null }) {
   useEffect(() => {
     getProfile()
   }, [user, getProfile])
+
+  useEffect(() => {
+    console.log("New Dream updated:", newDream)
+  }, [newDream])
 
   const handleSubmit = async (e: React.MouseEvent) => {
     e.preventDefault()
@@ -206,12 +209,7 @@ export default function AccountForm({ user }: { user: User | null }) {
       {/* ... */}
       <div>
         <label htmlFor="username">Hello, </label>
-        <input
-          id="username"
-          type="text"
-          value={username || ''}
-          onChange={(e) => setUsername(e.target.value)}
-        />
+        {username}
       </div>
 
       <div>
