@@ -56,3 +56,46 @@ export async function signup(formData: FormData) {
     redirect('/confirmation') // redirect to confirmation page
   }
 }
+  
+  export async function reset(formData: FormData) {
+    const supabase = await createClient()
+
+    // type-casting here for convenience
+    let email = formData.get('email') as string
+
+    // same thing but for signup
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                        redirectTo: 'http://localhost:3001/change_password',
+                      })
+
+    if (error) {
+      console.log(error)
+      redirect('/error')
+    }
+  }
+
+  export async function update_password(formData: FormData) {
+    const supabase = await createClient()
+
+    // type-casting here for convenience
+    let newPassword = formData.get('password') as string
+
+    const {data: session } = await supabase.auth.getSession();
+
+    if (session) {
+      const { error } = await supabase.auth.updateUser({ password: newPassword })
+      if (error) {
+        console.log(error)
+        redirect('/error')
+      }
+      else {
+        revalidatePath('/', 'layout')
+        redirect('/')
+      }
+
+    }
+    else {
+      console.log("User not signed in.")
+      redirect('/error')
+    }
+  }
