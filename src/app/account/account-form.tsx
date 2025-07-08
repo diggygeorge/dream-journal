@@ -33,10 +33,7 @@ interface Dream {
 export default function AccountForm({ user }: { user: User | null }) {
   const supabase = createClient()
   const [loading, setLoading] = useState(true)
-  const [fullname, setFullname] = useState<string | null>(null)
   const [username, setUsername] = useState<string | null>(null)
-  const [website, setWebsite] = useState<string | null>(null)
-  const [avatar_url, setAvatarUrl] = useState<string | null>(null)
   
   const [newDream, setNewDream] = useState({user: user?.id, title: "", description: "", isPublic: false, author: username})
   const [dreamList, setDreamList] = useState<Dream[]>([])
@@ -80,7 +77,7 @@ export default function AccountForm({ user }: { user: User | null }) {
 
       const { data, error, status } = await supabase
         .from('profiles')
-        .select(`full_name, username, website, avatar_url`)
+        .select(`username`)
         .eq('id', user?.id)
         .single()
 
@@ -90,10 +87,7 @@ export default function AccountForm({ user }: { user: User | null }) {
       }
 
       if (data) {
-        setFullname(data.full_name)
         setUsername(data.username)
-        setWebsite(data.website)
-        setAvatarUrl(data.avatar_url)
         setNewDream((prev) => ({...prev, author: data.username}))
         getDreams()
       }
@@ -174,7 +168,7 @@ export default function AccountForm({ user }: { user: User | null }) {
   
 
   return (
-    <div className="form-widget static min-h-screen bg-gradient-to-b from-[#03002e] to-[#010048]">
+    <div className="form-widget static min-h-screen bg-gradient-to-b from-[#03002e] to-[#7965c1]">
 
       <div className="sticky p-4 top-0 bg-[#03002e]">
         <div className="flex justify-between">
@@ -246,14 +240,17 @@ export default function AccountForm({ user }: { user: User | null }) {
       </div>
       
       {loading ? <div className="static"><Loader color="#ffffff" className="absolute top-1/2 left-1/2"/></div> : <div className="p-4">
-        <ul className="flex-grow grid md:grid-cols-2 bg-[#001e6a] rounded-lg border-1 border-transparent">
+        <ul className="flex-grow bg-[#001e6a] rounded-lg border-1 border-transparent">
           {dreamList?.map((dream) => (
-            <li className={`shadow-md bg-white text-black hover:shadow-lg transition-all duration-200 border-4 ${selectedId === dream.id && update ? "ring-2 ring-purple-500" : ""} p-4 m-1 rounded-lg bg-white`} key={dream.id}>
+            <li className={`shadow-md bg-white text-black hover:shadow-lg transition-all duration-200 border-4 ${selectedId === dream.id && update ? "ring-4 ring-purple-500" : ""} p-4 m-2 rounded-lg bg-white`} key={dream.id}>
               <strong>{dream.title}</strong>
-              <h2>{dream.description}</h2>
+              <h2 className="pb-2">{dream.description}</h2>
               <AlertDialog>
                 <Button size="sm" className="hover:bg-gray-200 cursor-pointer" variant="outline">
-                  <AlertDialogTrigger className="cursor-pointer" onClick={() => setSelectedId(dream.id)}>Edit</AlertDialogTrigger>
+                  <AlertDialogTrigger className="cursor-pointer" onClick={() => {
+                                                                      setSelectedId(dream.id)
+                                                                      setUpdate(true)
+                                                                      }}>Edit</AlertDialogTrigger>
                 </Button>
                 <AlertDialogContent>
                   <AlertDialogHeader>
@@ -280,7 +277,7 @@ export default function AccountForm({ user }: { user: User | null }) {
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel className="cursor-pointer">Cancel</AlertDialogCancel>
+                    <AlertDialogCancel onClick={() => setUpdate(false)} className="cursor-pointer">Cancel</AlertDialogCancel>
                     <AlertDialogAction className="cursor-pointer" onClick={(e:React.MouseEvent) => handleUpdate(e, selectedId)}>Update</AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>

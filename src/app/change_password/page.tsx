@@ -1,7 +1,6 @@
 "use client";
 
 import { update_password } from '../actions'
-import { useState } from 'react'
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -15,8 +14,6 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
 export default function SignupPage() {
-
-  const [password, setPassword] = useState("")
 
   return (
     <form>
@@ -33,7 +30,6 @@ export default function SignupPage() {
               <Input
                 id="password"
                 name="password"
-                onChange={(e) => setPassword(e.target.value)}
                 required
               />
             </div>

@@ -1,7 +1,6 @@
 "use client";
 
 import { reset } from '../actions'
-import { useState } from 'react'
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -15,8 +14,6 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
 export default function SignupPage() {
-
-  const [email, setEmail] = useState("")
 
   return (
     <form>
@@ -35,7 +32,6 @@ export default function SignupPage() {
                 type="email"
                 name="email"
                 placeholder="m@example.com"
-                onChange={(e) => setEmail(e.target.value)}
                 required
               />
             </div>
