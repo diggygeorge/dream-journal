@@ -63,7 +63,7 @@ export async function signup(formData: FormData) {
     const email = formData.get('email') as string
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-                        redirectTo: 'http://localhost:3001/change_password',
+                        redirectTo: 'https://dream-journal-drab.vercel.app/change_password',
                       })
 
     if (error) {

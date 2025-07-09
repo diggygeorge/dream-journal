@@ -94,7 +94,7 @@ export default function AnonymousPage({ user }: { user: User | null }) {
         </div>
           <div className="flex">
             <div>
-              <form action={() => redirect('/anonymous')} method="post">
+              <form action={() => redirect('/account')} method="post">
                 <Button className=" text-white border-2 border-black button block bg-[#0e2148] hover:bg-gray-800 cursor-pointer" type="submit">
                   View/Submit Dreams
                 </Button>
