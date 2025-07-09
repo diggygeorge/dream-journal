@@ -42,7 +42,7 @@ export default function CreateUsernamePage({ user }: { user: User | null }) {
   }
 
   return (
-    <form>
+    <form className="bg-gradient-to-b from-[#03002e] to-[#7965c1] h-screen">
     <p>{user ? "User exists" : "User does not exist"}</p>
     <Card className="relative top-50 m-auto w-full max-w-lg">
       <CardHeader>

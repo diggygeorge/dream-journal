@@ -23,7 +23,7 @@ export default function LoginPage() {
   const [isHidden, setHidden] = useState(true)
 
   return (
-    <div className="">
+    <div className="bg-gradient-to-b from-[#03002e] to-[#7965c1] h-screen">
       <form>
       <Card className="relative top-50 m-auto w-full max-w-sm">
         <CardHeader>

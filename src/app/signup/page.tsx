@@ -26,7 +26,7 @@ export default function SignupPage() {
   }
 
   return (
-    <form>
+    <form className="bg-gradient-to-b from-[#03002e] to-[#7965c1] h-screen">
     <Card className="relative top-40 m-auto w-full max-w-lg">
       <CardHeader>
         <CardTitle>Create your account</CardTitle>

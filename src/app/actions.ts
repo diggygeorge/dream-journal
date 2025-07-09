@@ -73,26 +73,24 @@ export async function signup(formData: FormData) {
   }
 
   export async function update_password(formData: FormData) {
+    const code = formData.get('code') as string
+    const password = formData.get('password') as string
+
     const supabase = await createClient()
 
-    const newPassword = formData.get('password') as string
+    const { data, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code)
 
-    const {data: session } = await supabase.auth.getSession();
-
-    if (session) {
-      const { error } = await supabase.auth.updateUser({ password: newPassword })
-      if (error) {
-        console.log(error)
-        redirect('/error')
-      }
-      else {
-        revalidatePath('/', 'layout')
-        redirect('/')
-      }
-
-    }
-    else {
-      console.log("User not signed in.")
+    if (!data || exchangeError) {
+      console.error(exchangeError)
       redirect('/error')
     }
-  }
+
+    const { error: updateError } = await supabase.auth.updateUser({ password })
+
+    if (updateError) {
+      console.error(updateError)
+      redirect('/error')
+    }
+
+    redirect('/')
+}

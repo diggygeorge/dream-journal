@@ -1,5 +1,6 @@
 "use client";
 
+import { useSearchParams } from 'next/navigation'
 import { update_password } from '../actions'
 import { Button } from "@/components/ui/button"
 import {
@@ -13,10 +14,16 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
-export default function SignupPage() {
+
+export default function ChangePasswordPage() {
+
+  const searchParams = useSearchParams()
+
+  const code = searchParams.get('code')
 
   return (
-    <form>
+    <form className="bg-gradient-to-b from-[#03002e] to-[#7965c1] h-screen">
+    <input type="hidden" name="code" value={code ? code : ""}/>
     <Card className="relative top-40 m-auto w-full max-w-lg">
       <CardHeader>
         <CardTitle>Reset Password</CardTitle>
