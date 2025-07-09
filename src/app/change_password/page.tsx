@@ -13,17 +13,26 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Suspense } from 'react'
 
-
-export default function ChangePasswordPage() {
-
-  const searchParams = useSearchParams()
+function Code() {
+const searchParams = useSearchParams()
 
   const code = searchParams.get('code')
 
   return (
-    <form className="bg-gradient-to-b from-[#03002e] to-[#7965c1] h-screen">
     <input type="hidden" name="code" value={code ? code : ""}/>
+  )
+}
+
+
+export default function ChangePasswordPage() {
+
+  return (
+    <form className="bg-gradient-to-b from-[#03002e] to-[#7965c1] h-screen">
+    <Suspense>
+        <Code/>
+    </Suspense>
     <Card className="relative top-40 m-auto w-full max-w-lg">
       <CardHeader>
         <CardTitle>Reset Password</CardTitle>
