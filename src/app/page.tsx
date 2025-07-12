@@ -25,7 +25,11 @@ export default function LoginPage() {
   return (
     <div className="bg-gradient-to-b from-[#03002e] to-[#7965c1] h-screen">
       <form>
-      <Card className="relative top-50 m-auto w-full max-w-sm">
+      <div className="relative top-20 m-auto w-full max-w-sm">
+        <div className="pb-12 text-[#e3d095] scroll-m-20 pb-2 text-6xl font-semibold tracking-tight first:mt-0">
+          Dreamcatchers
+        </div>
+      <Card>
         <CardHeader>
           <CardTitle>Login to your account</CardTitle>
           <CardDescription>
@@ -78,6 +82,7 @@ export default function LoginPage() {
           </Button>
         </CardFooter>
       </Card>
+      </div>
       </form>
     </div>
   )
